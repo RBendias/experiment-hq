@@ -1,8 +1,16 @@
+
+
+
+<div align="center">
+
+
+
+<img src="logo.png"  width="20%" class="center" >
+
 # ExperimentHQ
 
-![ExperimentHQ Logo](logo.png)
+</div>
 
-## Introduction
 
 ExperimentHQ is a Python package that allows you to track and manage experiments directly from your Python code, and seamlessly sync the results to a Notion database. With ExperimentHQ, you can easily monitor the performance of your models, log custom metrics, and compare experiments with ease, all from a single, intuitive interface.
 
