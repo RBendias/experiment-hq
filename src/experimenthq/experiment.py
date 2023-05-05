@@ -1,0 +1,71 @@
+from typing import List, Optional
+import requests
+import json
+
+API_URL = 'https://experiment-hq-rest.vercel.app/'
+
+class Experiment:
+    """
+    Experiment class for logging parameters to Notion. 
+
+    args:
+        api_key (str): API key for the ExperimentHQ API
+        project_name (str): Name of the project to log to
+        name (Optional[str]): Name of the experiment
+        description (Optional[str]): Description of the experiment
+        tags (Optional[List[str]]): List of tags to add to the experiment
+    """
+    def __init__(self, 
+                 api_key: str,
+                 project_name: str,
+                 name: Optional[str] = None,
+                 description: Optional[str] = None,
+                 tags: Optional[List[str]] = None,
+    ):
+        self.project_name = project_name
+        self.api_key = api_key
+        self.name = name
+        self.description = description
+        self.tags = tags
+        self.experiment_id = self._start_experiment()
+
+    def _start_experiment(self):
+        post_data = {
+            "project": self.project_name,
+            "name": self.name,
+            "description": self.description,
+            "tags": self.tags
+        }
+        headers = {
+            "Content-Type": "application/json",
+            'Authorization': f"Bearer {self.api_key}"
+        }
+        response = requests.post(
+            url=f"{API_URL}experiment",
+            data=json.dumps(post_data),
+            headers=headers
+        )
+        if response.status_code != 200:
+            raise Exception("Failed to start experiment with message: " + response.text)
+
+        response_json = response.json()
+        return response_json.get("experiment_id")
+
+    def log_parameter(self, name, value):
+        data = {
+            "parameter_name": name,
+            "parameter_value": value
+        }
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}"
+        }
+
+        print(self.experiment_id)
+        response = requests.post(
+            url=f"{API_URL}experiments/{self.experiment_id}/parameters",
+            data=json.dumps(data),
+            headers=headers
+        )
+        if response.status_code != 200:
+            raise Exception("Failed to log parameter with message: " + response.text)
