@@ -1,30 +1,75 @@
-import os
-import setuptools
+#!/usr/bin/env python
 
-VERSION = '0.1.0'
-DESCRIPTION = 'A Python package for tracking experiments in Notion'
+import os
+import re
+from glob import glob
+from os.path import basename, splitext
+
+from setuptools import find_packages, setup  # type: ignore
+
+# TODO: Update the package meta-data
+NAME = "experimenthq"
+MAIN_PACKAGE = "experimenthq"
+DESCRIPTION = "A Python package for tracking experiments in Notion"
 URL = "https://github.com/EperimentHQ/experiment-hq"
+EMAIL = ""
+AUTHOR = ""
+LICENSE = "MIT"
+REQUIRES_PYTHON = ">=3.7"
+VERSION = "0.1.0"  # Only set version if you like to overwrite the version in _about.py
 WEBSITE = "https://ml-notion-tracking-ui-vs3h.vercel.app/"
 
 
+PWD = os.path.abspath(os.path.dirname(__file__))
 
 # Import the README and use it as the long-description.
-PWD = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(PWD, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
-setuptools.setup(
-    name="experimenthq",
+# Extract the version from the _about.py module.
+if not VERSION:
+    with open(os.path.join(PWD, "src", MAIN_PACKAGE, "_about.py")) as f:  # type: ignore
+        VERSION = re.findall(r"__version__\s*=\s*\"(.+)\"", f.read())[0]
+
+# Where the magic happens:
+setup(
+    name=NAME,
     version=VERSION,
-    author="ExperimentHQ",
-    author_email="notiontracking@email.com",
     description=DESCRIPTION,
     long_description=long_description,
     long_description_content_type="text/markdown",
+    author=AUTHOR,
+    author_email=EMAIL,
+    python_requires=REQUIRES_PYTHON,
     url=URL,
-    packages=setuptools.find_packages(),
-    packages=setuptools.find_packages(where="src", exclude=("tests", "test", "examples", "docs")),
+    license=LICENSE,
+    packages=find_packages(where="src", exclude=("tests", "test", "examples", "docs")),
     package_dir={"": "src"},
+    py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
+    zip_safe=False,
+    install_requires=["requests"],
+    extras_require={
+        # extras can be installed via: pip install package[dev]
+        "dev": [
+            "pytest",
+            "pytest-cov",
+            "flake8",
+            "black",
+            "isort",
+            "mypy",
+            "twine",
+            "wheel",
+            "setuptools",
+            "build",
+            "colorama",
+            "types-requests",
+        ],
+    },
+    include_package_data=True,
+    package_data={
+        # If there are data files included in your packages that need to be
+        # 'sample': ['package_data.dat'],
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
@@ -41,7 +86,6 @@ setuptools.setup(
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Topic :: Scientific/Engineering :: Information Analysis",
         "Topic :: Utilities",
-
     ],
     project_urls={
         "Changelog": URL + "/releases",
@@ -50,24 +94,16 @@ setuptools.setup(
         "Source": URL,
         "Website": WEBSITE,
     },
-    keywords=["notion", "tracking", "ml", "machine learning", "experiment", "experimentation", "experiment tracking", 
-              "python", "sync",]
-    python_requires=">=3.6",
-    install_requires=[
-        "requests",
+    # entry_points={"console_scripts": [f"{NAME}={MAIN_PACKAGE}._cli:cli"]},
+    keywords=[
+        "notion",
+        "tracking",
+        "ml",
+        "machine learning",
+        "experiment",
+        "experimentation",
+        "experiment tracking",
+        "python",
+        "sync",
     ],
-    extras_require={
-        "dev": [
-            "pytest",
-            "pytest-cov",
-            "flake8",
-            "black",
-            "isort",
-            "mypy",
-            "twine",
-            "wheel",
-            "setuptools",
-            "build",
-        ]
-    },
 )

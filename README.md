@@ -44,6 +44,7 @@ import experimenthq as ex
 experiment = ex.Experiment(
     name="My First Experiment",
     project="Project A",
+    api_key="YOUR_API_KEY"
 )
 
 experiment.log_parameter("accuracy", 0.85)
@@ -51,7 +52,7 @@ experiment.log_parameter("loss", 0.05)
 
 ```
 
-This codes creates an experiment with the name "My First Experiment" and tags it with the project "Project A". It then logs two parameters, "accuracy" and "loss", with values 0.85 and 0.05 respectively.
+This code creates an experiment with the name "My First Experiment" and tags it with the project "Project A". It then logs two parameters, "accuracy" and "loss", with values 0.85 and 0.05 respectively.
 
 ### Viewing Experiments in Notion
 

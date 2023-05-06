@@ -24,7 +24,6 @@ check:
 	pipenv run black --check tests
 	pipenv run isort --profile black --check-only src
 	pipenv run isort --profile black --check-only tests
-	pipenv run pydocstyle src
 	pipenv run mypy src
 	pipenv run flake8 --show-source --statistics src
 	pipenv run flake8 --show-source --statistics tests
@@ -39,11 +38,6 @@ format:
 	pipenv run black tests
 	pipenv run isort --profile black src
 	pipenv run isort --profile black tests
-
-.PHONY: docs
-# Build the API documentation.
-docs:
-	pipenv run lazydocs --overview-file=README.md --src-base-url=https://github.com/ExperimentHQ/experimenthq/blob/main experimenthq
 
 .PHONY: build
 # Build everything for release.
