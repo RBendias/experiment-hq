@@ -21,7 +21,7 @@ The purpose of this document is to provide a guide for using ExperimentHQ to tra
 Before you can use ExperimentHQ, you need to set up the following prerequisites:
 
 1. Set up a Notion account.
-2. Set up an (ExperimentHQ)[https://ml-notion-tracking-ui-vs3h.vercel.app/] account. 
+2. Set up an [ExperimentHQ](http://www.experiment-hq.com/) account. 
 3. Get an API token from ExperimentHQ
 4. Install ExperimentHQ.
 
