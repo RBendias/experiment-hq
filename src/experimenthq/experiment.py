@@ -3,7 +3,7 @@ from typing import List, Optional
 
 import requests
 
-API_URL = "https://experiment-hq-rest.vercel.app/"
+API_URL = "https://www.api.experiment-hq.com/"
 
 
 class Experiment:
