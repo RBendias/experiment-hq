@@ -5,7 +5,7 @@
 
 
 
-<img src="https://www.experiment-hq.com/_next/image?url=%2Flogo.ico&w=3840&q=75"  width="20%" class="center" >
+<img src="https://www.experiment-hq.com/_next/image?url=%2Flogo.ico&w=3840&q=75"  width="15%" class="center" >
 
 # ExperimentHQ
 
