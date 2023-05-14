@@ -21,9 +21,10 @@ The purpose of this document is to provide a guide for using ExperimentHQ to tra
 Before you can use ExperimentHQ, you need to set up the following prerequisites:
 
 1. Set up a Notion account.
-2. Set up an [ExperimentHQ](http://www.experiment-hq.com/) account. 
-3. Get an API token from ExperimentHQ
-4. Install ExperimentHQ.
+2. Set up an [ExperimentHQ](http://www.experiment-hq.com/) account.
+3. Connect you Notion account with [ExperimentHQ](http://www.experiment-hq.com/account) 
+4. Copy your personal API token from [ExperimentHQ](http://www.experiment-hq.com/account)
+5. Install ExperimentHQ.
 
 ## Installation
 
