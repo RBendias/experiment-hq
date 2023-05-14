@@ -5,7 +5,7 @@
 
 
 
-<img src="https://www.experiment-hq.com/_next/image?url=%2Flogo.ico&w=3840&q=75"  width="15%" class="center" >
+<img src="https://www.experiment-hq.com/_next/image?url=%2Flogo.png&w=3840&q=75"  width="15%" class="center" >
 
 # ExperimentHQ
 
@@ -59,7 +59,7 @@ This code creates an experiment with the name "My First Experiment" and tags it 
 
 To view the experiments that you've logged with ExperimentHQ in Notion go to the Notion page that you've linked to ExperimentHQ. You should see a table with the experiments that you've logged.
 
-![Notion Table](notion_table.png)
+![Notion Table](https://www.experiment-hq.com/_next/image?url=%2Fnotion_dashboard.png&w=3840&q=75)
 
 ## Conclusion
 ExperimentHQ provides a simple and intuitive way to track and manage your experiments in Python and sync the results to Notion. By using ExperimentHQ, you can streamline your experiment tracking and make your work more efficient and effective. Try it out today and see the difference it can make in your workflow!
