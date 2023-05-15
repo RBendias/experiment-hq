@@ -4,6 +4,7 @@ import os
 import re
 from glob import glob
 from os.path import basename, splitext
+from pathlib import Path
 
 from setuptools import find_packages, setup  # type: ignore
 
@@ -11,20 +12,19 @@ from setuptools import find_packages, setup  # type: ignore
 NAME = "experimenthq"
 MAIN_PACKAGE = "experimenthq"
 DESCRIPTION = "A Python package for tracking experiments in Notion"
-URL = "https://github.com/EperimentHQ/experiment-hq"
 EMAIL = ""
 AUTHOR = ""
 LICENSE = "MIT"
 REQUIRES_PYTHON = ">=3.7"
-VERSION = "0.1.0"  # Only set version if you like to overwrite the version in _about.py
-WEBSITE = "https://ml-notion-tracking-ui-vs3h.vercel.app/"
+VERSION = None  # Only set version if you like to overwrite the version in _about.py
+WEBSITE = "https://www.experiment-hq.com/"
 
 
 PWD = os.path.abspath(os.path.dirname(__file__))
 
 # Import the README and use it as the long-description.
-with open(os.path.join(PWD, "README.md"), encoding="utf-8") as f:
-    long_description = f.read()
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text()
 
 # Extract the version from the _about.py module.
 if not VERSION:
@@ -41,13 +41,12 @@ setup(
     author=AUTHOR,
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
-    url=URL,
     license=LICENSE,
     packages=find_packages(where="src", exclude=("tests", "test", "examples", "docs")),
     package_dir={"": "src"},
     py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
     zip_safe=False,
-    install_requires=["requests"],
+    install_requires=["requests", "types-requests"],
     extras_require={
         # extras can be installed via: pip install package[dev]
         "dev": [

@@ -57,4 +57,4 @@ test:
 .PHONY: release
 # Build everything and upload distribution to PyPi.
 release: build
-	twine upload -u "__token__" dist/*
+	pipenv run twine upload -u "__token__" dist/* 
