@@ -47,7 +47,19 @@ class Experiment:
         response = requests.post(
             url=f"{API_URL}experiment", data=json.dumps(post_data), headers=headers
         )
-        if response.status_code != 200:
+
+        # Raise exception if maximum number of experiments reached
+        if response.status_code == 401:
+            raise Exception("Invalid API key")
+
+        # Raise exception if maximum number of experiments reached
+        elif response.status_code == 403:
+            raise Exception("Maximum number of experiments reached")
+
+        elif response.status_code == 404:
+            raise Exception("ExperimentHQ database not found")
+
+        elif response.status_code != 200:
             raise Exception("Failed to start experiment with message: " + response.text)
 
         response_json = response.json()
@@ -65,5 +77,12 @@ class Experiment:
             data=json.dumps(data),
             headers=headers,
         )
-        if response.status_code != 200:
+
+        if response.status_code == 401:
+            raise Exception("Invalid API key")
+
+        elif response.status_code == 404:
+            raise Exception("ExperimentHQ database not found")
+
+        elif response.status_code != 200:
             raise Exception("Failed to log parameter with message: " + response.text)
