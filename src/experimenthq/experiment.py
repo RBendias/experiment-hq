@@ -1,5 +1,6 @@
 import requests
-from typing import List, Optional
+from typing import List, Optional, Union
+from experimenthq.notion_types import NotionTypes
 
 API_URL = "https://www.api.experiment-hq.com/"
 
@@ -44,7 +45,7 @@ class Experiment:
             "Authorization": f"Bearer {self.api_key}",
         }
         response = self.session.post(
-            f"{API_URL}experiment",
+            f"{API_URL}experiments",
             json=post_data,
             headers=headers,
         )
@@ -58,17 +59,63 @@ class Experiment:
             raise Exception("Failed to start experiment with message: " + response.text)
         return response.json().get("experiment_id")
 
-    def log_parameter(self, name: str, value: str) -> None:
-        data = {"parameter_name": name, "parameter_value": value}
+    def log_parameter(
+        self,
+        name: str,
+        value: str,
+        notion_type: str = "rich_text",
+    ) -> None:
+        """
+        Log a parameter to Notion.
+
+        args:
+            name (str): Name of the parameter
+            value (str): Value of the parameter. Depending on the type of the parameter,
+                         there needs to be a specific format. Please pass several values
+                         for multi_select parameters as one string separated by commas.
+                         The date needs to be in ISO #8601 format and the people parameter
+                         needs to be a Notion ID.
+            notion_type Optional(NotionTypes, str): Type of the parameter. Can be one of
+                                                    the following:
+                                                    - rich_text (default)
+                                                    - number
+                                                    - select
+                                                    - multi_select
+                                                    - files
+                                                    - checkbox
+                                                    - url
+                                                    - email
+                                                    - phone_number
+                                                    - people
+                                                    - date
+        """
+        # Check if the value is valid:
+        NotionTypes(notion_type).validate_value(
+            value=value,
+            notion_type=notion_type,
+        )
+
+        data = {
+            "parameter_name": name,
+            "parameter_value": value,
+            "parameter_type": notion_type,
+        }
+
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}",
         }
+
+        print("Sending data")
         response = self.session.post(
             f"{API_URL}experiments/{self.experiment_id}/parameters",
             json=data,
             headers=headers,
         )
+
+        print("response")
+        print(response.status_code)
+        print(response.text)
         if response.status_code == 401:
             raise Exception("Invalid API key")
         elif response.status_code == 404:

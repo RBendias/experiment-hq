@@ -46,7 +46,13 @@ setup(
     package_dir={"": "src"},
     py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
     zip_safe=False,
-    install_requires=["requests", "types-requests"],
+    install_requires=[
+        "requests",
+        "types-requests",
+        "python-dateutil",
+        "phonenumbers",
+        "urllib3",
+    ],
     extras_require={
         # extras can be installed via: pip install package[dev]
         "dev": [
@@ -87,10 +93,6 @@ setup(
         "Topic :: Utilities",
     ],
     project_urls={
-        "Changelog": URL + "/releases",
-        "Issue Tracker": URL + "/issues",
-        "Documentation": URL + "#documentation",
-        "Source": URL,
         "Website": WEBSITE,
     },
     # entry_points={"console_scripts": [f"{NAME}={MAIN_PACKAGE}._cli:cli"]},

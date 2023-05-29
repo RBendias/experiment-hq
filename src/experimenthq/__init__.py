@@ -4,3 +4,4 @@ from . import _about
 __version__ = _about.__version__
 
 from .experiment import *
+from .notion_types import *
