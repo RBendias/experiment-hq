@@ -1,5 +1,7 @@
-import requests
 from typing import List, Optional, Union
+
+import requests
+
 from experimenthq.notion_types import NotionTypes
 
 API_URL = "https://www.api.experiment-hq.com/"
