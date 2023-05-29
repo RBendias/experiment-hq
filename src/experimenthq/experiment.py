@@ -65,7 +65,7 @@ class Experiment:
         self,
         name: str,
         value: str,
-        notion_type: str = "rich_text",
+        notion_type: Optional[str] = None,
     ) -> None:
         """
         Log a parameter to Notion.
@@ -77,9 +77,13 @@ class Experiment:
                          for multi_select parameters as one string separated by commas.
                          The date needs to be in ISO #8601 format and the people parameter
                          needs to be a Notion ID.
-            notion_type Optional(NotionTypes, str): Type of the parameter. Can be one of
-                                                    the following:
-                                                    - rich_text (default)
+            notion_type Optional(str): Type of the parameter. If None, the
+                                                    type will be inferred from the notion database.
+                                                    If no column with the name of the parameter
+                                                    exists, the type will be set to rich_text.
+                                                    If column should be created with specific type,
+                                                    the following types are supported:
+                                                    - rich_text
                                                     - number
                                                     - select
                                                     - multi_select
@@ -92,10 +96,11 @@ class Experiment:
                                                     - date
         """
         # Check if the value is valid:
-        NotionTypes(notion_type).validate_value(
-            value=value,
-            notion_type=notion_type,
-        )
+        if notion_type is not None:
+            NotionTypes(notion_type).validate_value(
+                value=value,
+                notion_type=notion_type,
+            )
 
         data = {
             "parameter_name": name,
