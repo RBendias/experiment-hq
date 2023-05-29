@@ -77,23 +77,22 @@ class Experiment:
                          for multi_select parameters as one string separated by commas.
                          The date needs to be in ISO #8601 format and the people parameter
                          needs to be a Notion ID.
-            notion_type Optional(str): Type of the parameter. If None, the
-                                                    type will be inferred from the notion database.
-                                                    If no column with the name of the parameter
-                                                    exists, the type will be set to rich_text.
-                                                    If column should be created with specific type,
-                                                    the following types are supported:
-                                                    - rich_text
-                                                    - number
-                                                    - select
-                                                    - multi_select
-                                                    - files
-                                                    - checkbox
-                                                    - url
-                                                    - email
-                                                    - phone_number
-                                                    - people
-                                                    - date
+            notion_type Optional(str): Used to create a new column in the Notion database.
+                                       Setting `notion_type` is optional and will be ignored
+                                        if the column already exists. If the column should be
+                                        created with a specific type, the following types are
+                                        supported:
+                                            - rich_text
+                                            - number
+                                            - select
+                                            - multi_select
+                                            - files
+                                            - checkbox
+                                            - url
+                                            - email
+                                            - phone_number
+                                            - people
+                                            - date
         """
         # Check if the value is valid:
         if notion_type is not None:
@@ -113,16 +112,12 @@ class Experiment:
             "Authorization": f"Bearer {self.api_key}",
         }
 
-        print("Sending data")
         response = self.session.post(
             f"{API_URL}experiments/{self.experiment_id}/parameters",
             json=data,
             headers=headers,
         )
 
-        print("response")
-        print(response.status_code)
-        print(response.text)
         if response.status_code == 401:
             raise Exception("Invalid API key")
         elif response.status_code == 404:
