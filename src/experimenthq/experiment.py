@@ -104,7 +104,8 @@ class Experiment:
                     print(
                         f"Warning: Failed to log parameter `{data['parameter_name']}` with "
                         f"value: `{data['parameter_value']}`. Please add it manually to the "
-                        f"corresponding Notion page: {NOTION_BASE_URL+self.experiment_id}."
+                        f"corresponding Notion page: ",
+                        "{NOTION_BASE_URL+self.experiment_id.replace('-', '')}.",
                     )
         finally:
             # Mark all tasks in the batch as done.
