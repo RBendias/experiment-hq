@@ -1,6 +1,8 @@
 from typing import List, Optional
 import queue
 import threading
+import atexit
+
 
 import requests
 
@@ -41,6 +43,8 @@ class Experiment:
         self.queue = queue.Queue()
         self.thread = threading.Thread(target=self._worker, daemon=True)
         self.thread.start()
+        # Register the exit handler after starting the thread
+        atexit.register(self._exit_handler)
 
     @property
     def headers(self) -> dict:
@@ -49,10 +53,31 @@ class Experiment:
             "Authorization": f"Bearer {self.api_key}",
         }
 
+    @property
+    def timeout(self) -> int:
+        # Send data every 10 seconds
+        return 10
+
+    def _exit_handler(self) -> None:
+        """Stops the worker thread and waits for it to finish."""
+        # Put the sentinel task into the queue to tell the thread to stop
+        self.queue.put(None)
+
+        # Wait for the worker thread to finish
+        self.thread.join()
+
     def _worker(self) -> None:
         batch_data = []
         while True:
-            task = self.queue.get()
+            try:
+                task = self.queue.get(timeout=self.timeout)
+            except queue.Empty:
+                # If the queue is empty after the timeout, send any remaining data
+                if batch_data:
+                    self._send_batch(batch_data)
+                    batch_data = []
+                continue
+
             if task is None:  # We use None as a sentinel to end the thread.
                 # Send any remaining data in the batch before ending the thread.
                 if batch_data:
