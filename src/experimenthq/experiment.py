@@ -1,10 +1,13 @@
-from typing import List, Optional, Union
+from typing import List, Optional
+import queue
+import threading
 
 import requests
 
 from experimenthq.notion_types import NotionTypes
 
 API_URL = "https://www.api.experiment-hq.com/"
+NOTION_BASE_URL = "https://www.notion.so/"
 
 
 class Experiment:
@@ -34,6 +37,31 @@ class Experiment:
         self.tags = tags
         self.session = requests.Session()
         self.experiment_id = self._start_experiment()
+        self.queue = queue.Queue()
+        self.thread = threading.Thread(target=self._worker, daemon=True)
+        self.thread.start()
+
+    def _worker(self) -> None:
+        while True:
+            task = self.queue.get()
+            if task is None:  # We use None as a sentinel to end the thread.
+                break
+            data, headers = task
+            try:
+                response = self.session.post(
+                    f"{API_URL}experiments/{self.experiment_id}/parameters",
+                    json=data,
+                    headers=headers,
+                )
+
+                if response.status_code not in {200, 401, 400, 404}:
+                    print(
+                        f"Warning: Failed to log parameter `{data['parameter_name']}` with "
+                        f"value: `{data['parameter_value']}`. Please add it manually to the "
+                        f"corresponding Notion page: {NOTION_BASE_URL+self.experiment_id}."
+                    )
+            finally:
+                self.queue.task_done()
 
     def _start_experiment(self) -> str:
         post_data = {
@@ -112,19 +140,5 @@ class Experiment:
             "Authorization": f"Bearer {self.api_key}",
         }
 
-        response = self.session.post(
-            f"{API_URL}experiments/{self.experiment_id}/parameters",
-            json=data,
-            headers=headers,
-        )
-
-        if response.status_code == 401:
-            raise Exception("Invalid API key")
-        elif response.status_code == 404:
-            raise Exception("ExperimentHQ database not found")
-        elif response.status_code == 400:
-            raise Exception(
-                "Invalid parameter value or name. We currently only support text columns."
-            )
-        elif response.status_code != 200:
-            raise Exception("Failed to log parameter with message: " + response.text)
+        # Enqueue the task instead of executing it immediately
+        self.queue.put((data, headers))
