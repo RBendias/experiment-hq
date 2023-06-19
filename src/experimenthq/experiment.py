@@ -37,30 +37,53 @@ class Experiment:
         self.tags = tags
         self.session = requests.Session()
         self.experiment_id = self._start_experiment()
+        self.batch_size = 10
         self.queue = queue.Queue()
         self.thread = threading.Thread(target=self._worker, daemon=True)
         self.thread.start()
 
+    @property
+    def headers(self) -> dict:
+        return {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}",
+        }
+
     def _worker(self) -> None:
+        batch_data = []
         while True:
             task = self.queue.get()
             if task is None:  # We use None as a sentinel to end the thread.
+                # Send any remaining data in the batch before ending the thread.
+                if batch_data:
+                    self._send_batch(batch_data)
                 break
-            data, headers = task
-            try:
-                response = self.session.post(
-                    f"{API_URL}experiments/{self.experiment_id}/parameters",
-                    json=data,
-                    headers=headers,
-                )
+            data = task
+            batch_data.append((data))
 
-                if response.status_code not in {200, 401, 400, 404}:
+            # If the batch has reached the desired size, send it.
+            if len(batch_data) == self.batch_size:
+                self._send_batch(batch_data)
+                batch_data = []
+
+    def _send_batch(self, batch_data: List) -> None:
+        try:
+            response = self.session.post(
+                f"{API_URL}experiments/{self.experiment_id}/parameters",
+                json=batch_data,
+                headers=self.headers,
+            )
+
+            if response.status_code not in {200, 401, 400, 404}:
+                for data in batch_data:
                     print(
                         f"Warning: Failed to log parameter `{data['parameter_name']}` with "
                         f"value: `{data['parameter_value']}`. Please add it manually to the "
                         f"corresponding Notion page: {NOTION_BASE_URL+self.experiment_id}."
                     )
-            finally:
+        finally:
+            # Mark all tasks in the batch as done.
+            for _ in range(len(batch_data)):
                 self.queue.task_done()
 
     def _start_experiment(self) -> str:
@@ -70,14 +93,10 @@ class Experiment:
             "description": self.description,
             "tags": self.tags,
         }
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.api_key}",
-        }
         response = self.session.post(
             f"{API_URL}experiments",
             json=post_data,
-            headers=headers,
+            headers=self.headers,
         )
         if response.status_code == 401:
             raise Exception("Invalid API key")
@@ -135,10 +154,5 @@ class Experiment:
             "parameter_type": notion_type,
         }
 
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.api_key}",
-        }
-
         # Enqueue the task instead of executing it immediately
-        self.queue.put((data, headers))
+        self.queue.put(data)
