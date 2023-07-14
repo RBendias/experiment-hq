@@ -52,6 +52,7 @@ setup(
         "python-dateutil",
         "phonenumbers",
         "urllib3",
+        "tenacity",
     ],
     extras_require={
         # extras can be installed via: pip install package[dev]

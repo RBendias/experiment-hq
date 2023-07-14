@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Union
 
 
 class NotionTypes(str, Enum):
@@ -14,7 +15,7 @@ class NotionTypes(str, Enum):
     people = "people"
     date = "date"
 
-    def validate_value(self, value: str, notion_type: str) -> bool:
+    def validate_value(self, value: Union[str, int, bool], notion_type: str) -> bool:
         if notion_type == self.number:
             try:
                 float(value)
